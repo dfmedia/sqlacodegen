@@ -617,6 +617,12 @@ class CodeGenerator(object):
             if len(index.columns) > 1:
                 rendered += '{0}{1},\n'.format(self.indentation, self.render_index(index))
 
+        for option, val in model.table.dialect_options['redshift'].items():
+            if val:
+                if isinstance(val, str):
+                    val = "'{0}'".format(val)
+                rendered += '{0}redshift_{1}={2},\n'.format(self.indentation, option, val)
+
         if model.schema:
             rendered += "{0}schema='{1}',\n".format(self.indentation, model.schema)
 
