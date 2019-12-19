@@ -610,8 +610,22 @@ class CodeGenerator(object):
         rendered = 't_{0} = Table(\n{1}{0!r}, metadata,\n'.format(
             model.table.name, self.indentation)
 
+        # see https://github.com/agronholm/sqlacodegen/issues/32
+        if len(model.table.columns) > 250:
+            wrap_cols = True
+        else:
+            wrap_cols = False
+
+        if wrap_cols:
+            rendered += '{0}*[\n'.format(self.indentation)
+
         for column in model.table.columns:
-            rendered += '{0}{1},\n'.format(self.indentation, self.render_column(column, True))
+            rendered += '{0}{1},\n'.format(
+                self.indentation * 2 if wrap_cols else self.indentation,
+                self.render_column(column, True)
+            )
+        if wrap_cols:
+            rendered += '{0}],\n'.format(self.indentation)
 
         for constraint in sorted(model.table.constraints, key=_get_constraint_sort_key):
             if isinstance(constraint, PrimaryKeyConstraint):
