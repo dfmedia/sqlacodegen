@@ -48,6 +48,14 @@ def main():
 
     # Write the generated model code to the specified file or standard output
     outfile = io.open(args.outfile, 'w', encoding='utf-8') if args.outfile else sys.stdout
-    generator = CodeGenerator(metadata, args.noindexes, args.noconstraints, args.nojoined,
-                              args.noinflect, args.noclasses, nocomments=args.nocomments)
+    generator = CodeGenerator(
+        metadata,
+        (args.schema or 'public'),
+        args.noindexes,
+        args.noconstraints,
+        args.nojoined,
+        args.noinflect,
+        args.noclasses,
+        nocomments=args.nocomments
+    )
     generator.render(outfile)

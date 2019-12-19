@@ -330,12 +330,26 @@ class CodeGenerator(object):
 
 {models}"""
 
-    def __init__(self, metadata, noindexes=False, noconstraints=False, nojoined=False,
-                 noinflect=False, noclasses=False, indentation='    ', model_separator='\n\n',
-                 ignored_tables=('alembic_version', 'migrate_version'), table_model=ModelTable,
-                 class_model=ModelClass,  template=None, nocomments=False):
+    def __init__(
+            self,
+            metadata,
+            schema,
+            noindexes=False,
+            noconstraints=False,
+            nojoined=False,
+            noinflect=False,
+            noclasses=False,
+            indentation='    ',
+            model_separator='\n\n',
+            ignored_tables=('alembic_version', 'migrate_version'),
+            table_model=ModelTable,
+            class_model=ModelClass,
+            template=None,
+            nocomments=False
+    ):
         super(CodeGenerator, self).__init__()
         self.metadata = metadata
+        self.schema = schema
         self.noindexes = noindexes
         self.noconstraints = noconstraints
         self.nojoined = nojoined
@@ -377,6 +391,9 @@ class CodeGenerator(object):
                 continue  # skip duplicates
             else:
                 table_names.add(table.name)
+
+            if (table.schema or 'public') != self.schema:
+                continue
 
             # Support for Alembic and sqlalchemy-migrate -- never expose the schema version tables
             if table.name in self.ignored_tables:
