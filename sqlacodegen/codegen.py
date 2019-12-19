@@ -369,7 +369,15 @@ class CodeGenerator(object):
         self.models = []
         self.collector = ImportCollector()
         classes = {}
+
+        table_names = set()
+
         for table in metadata.sorted_tables:
+            if table.name in table_names:
+                continue  # skip duplicates
+            else:
+                table_names.add(table.name)
+
             # Support for Alembic and sqlalchemy-migrate -- never expose the schema version tables
             if table.name in self.ignored_tables:
                 continue
